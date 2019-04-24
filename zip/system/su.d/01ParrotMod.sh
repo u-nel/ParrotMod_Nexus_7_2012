@@ -41,8 +41,8 @@ $bb chmod -R 0555 /sys/module/lowmemorykiller/parameters # so android can't edit
 
 echo 1 > /proc/sys/vm/highmem_is_dirtyable # allow LMK to free more ram
 
-settings put global fstrim_mandatory_interval 86400000 # 1 day
-settings put global storage_benchmark_interval 9223372036854775807 # effectively, never
+# settings put global fstrim_mandatory_interval 86400000 # 1 day
+# settings put global storage_benchmark_interval 9223372036854775807 # effectively, never
 
 cd /sys/block/mmcblk0/queue
 echo 512 > nr_requests # don't clog the pipes
@@ -67,14 +67,14 @@ cd "$olddir"
 # fs tune
 
 # trim is super slow on kingston
-manfid=$(cat /sys/block/mmcblk0/device/manfid)
+# manfid=$(cat /sys/block/mmcblk0/device/manfid)
 
-for m in /data /realdata /cache /system ; do
-test ! -e $m && continue
-$bb test $manfid != "0x000070" && $bb fstrim -m 1048576 "$m"
-mount | $bb grep "$m" | $bb grep -q ext4 && mount -t ext4 -o remount,noauto_da_alloc,journal_async_commit,journal_ioprio=7,barrier=0,dioread_nolock "$m" "$m"
-mount | $bb grep "$m" | $bb grep -q f2fs && mount -t f2fs -o remount,nobarrier,flush_merge,inline_xattr,inline_data,inline_dentry "$m" "$m"
-done
+# for m in /data /realdata /cache /system ; do
+# test ! -e $m && continue
+# $bb test $manfid != "0x000070" && $bb fstrim -m 1048576 "$m"
+# mount | $bb grep "$m" | $bb grep -q ext4 && mount -t ext4 -o remount,noauto_da_alloc,journal_async_commit,journal_ioprio=7,barrier=0,dioread_nolock "$m" "$m"
+# mount | $bb grep "$m" | $bb grep -q f2fs && mount -t f2fs -o remount,nobarrier,flush_merge,inline_xattr,inline_data,inline_dentry "$m" "$m"
+# done
 
 (for f in /sys/fs/ext4/*; do
 test "$f" = "/sys/fs/ext4/features" && continue
